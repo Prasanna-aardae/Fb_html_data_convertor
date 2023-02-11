@@ -61,31 +61,23 @@ public class FbHtmlConvertor {
 		return file;
 	}
 
-	public static List<String> htmlReader(File htmlFile) throws ParseException, IOException, DocumentException {
-		try (FileReader reader = new FileReader(htmlFile)) {
-			BufferedReader htmlDatas = new BufferedReader(reader);
+	public static List<String> htmlReader(File htmlFile) throws IOException{
+		FileReader reader = new FileReader(htmlFile);
+		try (BufferedReader htmlDatas = new BufferedReader(reader)) {
 			String content = "";
 			String str;
 			while ((str = htmlDatas.readLine()) != null) {
 				content += str;
 			}
 			return separateElementByRole(content);
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
-		return null;
 	}
 
-	private static List<String> separateElementByRole(String content)
-			throws ParseException, DocumentException, IOException {
-		List<String> divArray = new ArrayList<String>();
+	private static List<String> separateElementByRole(String content){
 		org.jsoup.nodes.Document html = Jsoup.parse(content);
 		Elements role = html.body().getElementsByAttribute("role");
 		String[] separateByDiv = role.toString().split("</div>");
-		for (String div : separateByDiv) {
-			divArray.add(div);
-		}
+		List<String> divArray = Arrays.asList(separateByDiv);
 		return divArray;
 	}
 
@@ -93,14 +85,13 @@ public class FbHtmlConvertor {
 			throws ParseException, DocumentException, IOException {
 		FileSeparator htmlFile = new FileSeparator(file, '/', '.');
 		Random random = new Random();
-		File myObj = new File(htmlFile.path() + "/sample_output_" + random.nextInt(50) + ".pdf");
-		myObj.createNewFile();
-		FileOutputStream myFile = new FileOutputStream(myObj);
+		int rValue = random.nextInt(50);
+		File myPdfFile = new File(htmlFile.path() + "/sample_output_" + rValue + ".pdf");
+		FileOutputStream myFile = new FileOutputStream(myPdfFile);
 		com.itextpdf.text.Document document = new Document();
 		PdfWriter.getInstance((com.itextpdf.text.Document) document, myFile);
 		document.open();
 		HashMap<String, String> mainValues = new HashMap<String, String>();
-		List<String> imgArray = new ArrayList<String>();
 		String[] monthNames = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		for (int r = 0; r < divArray.size(); r++) {
 			org.jsoup.nodes.Document htmls = Jsoup.parse(divArray.get(r));
@@ -155,6 +146,7 @@ public class FbHtmlConvertor {
 	private static String dateTimeCorrector(String[] sentenceToWord) throws ParseException {
 		java.util.Date date = new SimpleDateFormat("MMM", Locale.ENGLISH).parse(sentenceToWord[0]);
 		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
 		int month = cal.get(Calendar.MONTH) + 1;
 		String time;
 		String dateTime;
