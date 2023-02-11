@@ -20,7 +20,7 @@ public class FontChooser {
 		BaseFont baseFont;
 		switch(lang.getLanguage()) {
 		  case "ta":
-			baseFont = BaseFont.createFont("./font/Latha.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			baseFont = BaseFont.createFont("./font/TAM-005.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 			font = new Font(baseFont, 10, Font.BOLD);
 			return font;
 		  case "hi":

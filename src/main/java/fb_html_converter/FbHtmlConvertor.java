@@ -6,32 +6,30 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.itextpdf.layout.element.Text;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.DocumentException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
+import org.apache.tika.language.detect.LanguageResult;
 import org.apache.tika.langdetect.OptimaizeLangDetector;
 import org.apache.tika.language.detect.LanguageDetector;
-import org.apache.tika.language.detect.LanguageResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,8 +40,8 @@ public class FbHtmlConvertor {
 		UnZip unZip = new UnZip(file);
 		String dataFolder = unZip.fileToFolder();
 		File htmlFile = getHtmlFile(dataFolder);
-		List<String>  htmlreadData = htmlReader(htmlFile);
-		addValueToHash(htmlreadData , file);
+		List<String> htmlreadData = htmlReader(htmlFile);
+		addValueToDoc(htmlreadData, file);
 	}
 
 	private static File getHtmlFile(String folder) {
@@ -79,7 +77,8 @@ public class FbHtmlConvertor {
 		return null;
 	}
 
-	private static List<String> separateElementByRole(String content) throws ParseException, DocumentException, IOException {
+	private static List<String> separateElementByRole(String content)
+			throws ParseException, DocumentException, IOException {
 		List<String> divArray = new ArrayList<String>();
 		org.jsoup.nodes.Document html = Jsoup.parse(content);
 		Elements role = html.body().getElementsByAttribute("role");
@@ -90,10 +89,11 @@ public class FbHtmlConvertor {
 		return divArray;
 	}
 
-	public static void addValueToHash(List<String> divArray, String file) throws ParseException, DocumentException, IOException {
+	public static void addValueToDoc(List<String> divArray, String file)
+			throws ParseException, DocumentException, IOException {
 		FileSeparator htmlFile = new FileSeparator(file, '/', '.');
 		Random random = new Random();
-		File myObj = new File(htmlFile.path()+"/sample_output_" + random.nextInt(50) + ".pdf");
+		File myObj = new File(htmlFile.path() + "/sample_output_" + random.nextInt(50) + ".pdf");
 		myObj.createNewFile();
 		FileOutputStream myFile = new FileOutputStream(myObj);
 		com.itextpdf.text.Document document = new Document();
@@ -116,7 +116,7 @@ public class FbHtmlConvertor {
 						document.newPage();
 					}
 				} else if (imageElement.toString().isEmpty() != true && m.find()) {
-					Image img = Image.getInstance(htmlFile.path() + "/" +  htmlFile.filename()+"/" + m.group(1));
+					Image img = Image.getInstance(htmlFile.path() + "/" + htmlFile.filename() + "/" + m.group(1));
 
 					float scaler = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin()
 							- 2) / img.getWidth()) * 70;
