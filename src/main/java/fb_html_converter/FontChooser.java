@@ -26,7 +26,6 @@ public class FontChooser {
 		  case "hi":
 			baseFont = BaseFont.createFont("./font/Amiko-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 			font = new Font(baseFont, 10, Font.BOLD);
-			System.out.println("Prasanna");
 			return font;
 		default:
 			baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, false);

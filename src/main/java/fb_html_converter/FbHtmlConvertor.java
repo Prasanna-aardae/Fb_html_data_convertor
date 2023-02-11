@@ -1,19 +1,17 @@
 package fb_html_converter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Calendar;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class FbHtmlConvertor {
+	private static SecureRandom random = new SecureRandom();
 	public static void main(String[] args) throws IOException, ParseException, DocumentException {
 		String file = "./sample/sample.zip";
 		UnZip unZip = new UnZip(file);
@@ -84,18 +83,17 @@ public class FbHtmlConvertor {
 	public static void addValueToDoc(List<String> divArray, String file)
 			throws ParseException, DocumentException, IOException {
 		FileSeparator htmlFile = new FileSeparator(file, '/', '.');
-		Random random = new Random();
 		int rValue = random.nextInt(50);
 		File myPdfFile = new File(htmlFile.path() + "/sample_output_" + rValue + ".pdf");
 		FileOutputStream myFile = new FileOutputStream(myPdfFile);
 		com.itextpdf.text.Document document = new Document();
-		PdfWriter.getInstance((com.itextpdf.text.Document) document, myFile);
+		PdfWriter.getInstance(document, myFile);
 		document.open();
 		HashMap<String, String> mainValues = new HashMap<String, String>();
 		String[] monthNames = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		for (int r = 0; r < divArray.size(); r++) {
 			org.jsoup.nodes.Document htmls = Jsoup.parse(divArray.get(r));
-			if (htmls.body().text().isEmpty() != true) {
+			if (!htmls.body().text().isEmpty()) {
 				Elements imageElement = htmls.body().getElementsByTag("img");
 				Pattern p = Pattern.compile("src=\"(.*?)\"");
 				Matcher m = p.matcher(imageElement.toString());
@@ -106,7 +104,7 @@ public class FbHtmlConvertor {
 						pushValuesToDoc(mainValues, document);
 						document.newPage();
 					}
-				} else if (imageElement.toString().isEmpty() != true && m.find()) {
+				} else if (!imageElement.toString().isEmpty() && m.find()) {
 					Image img = Image.getInstance(htmlFile.path() + "/" + htmlFile.filename() + "/" + m.group(1));
 
 					float scaler = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin()
